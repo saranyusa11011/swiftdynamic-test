@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "473024083131",
+    "project_id": "test-swiftdynamic",
+    "storage_bucket": "test-swiftdynamic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473024083131:android:b5bd5409f52efdef6a659e",
+        "android_client_info": {
+          "package_name": "com.example.swift_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "473024083131-8732rhcccup5uspgahcmb40dc7aiph2r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAk8roE10-jaOEoxRaProTHre7Bm6moYBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "473024083131-8732rhcccup5uspgahcmb40dc7aiph2r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
