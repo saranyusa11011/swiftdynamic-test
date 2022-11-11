@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:swift_test/Problem_1/edit_todo.dart';
 import 'package:swift_test/background.dart';
@@ -25,6 +25,7 @@ class _TodolistScreenState extends State<TodolistScreen> {
   late bool sortbyStatus = false;
   late bool sortbyTodo = false;
   late String sort = 'date';
+
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<TodolistProvider>(context);
@@ -73,6 +74,16 @@ class _TodolistScreenState extends State<TodolistScreen> {
                           ),
                         ),
                         const Spacer(),
+                        IconButton(
+                            onPressed: () {
+                              showSearch(
+                                  context: context,
+                                  delegate: MySearchDelegate());
+                            },
+                            icon: const Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            )),
                         IconButton(
                             onPressed: () {
                               Navigator.pushNamed(context, '/todolist/history');
@@ -658,166 +669,166 @@ class _TodolistScreenState extends State<TodolistScreen> {
     );
   }
 
-  late String todo = '';
-  late String description = '';
-  late DateTime _myDateTime;
-  late String date = '';
-  final initialTime = const TimeOfDay(hour: 0, minute: 0);
-  late TimeOfDay time = const TimeOfDay(hour: -10, minute: 0);
-  final formKey = GlobalKey<FormState>();
-  late String timetext = '?';
-  late String hour = '?';
-  late String min = '?';
-  Future<void> _showMyDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add new?'),
-          content: SizedBox(
-            height: 220,
-            child: SingleChildScrollView(
-                child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.length >= 100) {
-                        return 'Please enter To do.';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.sports_soccer),
-                        labelText: 'To do',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        )),
-                    onChanged: (String value) {
-                      todo = value;
-                    },
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 7, left: 20, right: 20),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.description),
-                        labelText: 'Description',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        )),
-                    onChanged: (String value) {
-                      description = value;
-                    },
-                  ),
-                ),
-                Text(date),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () async {
-                        _myDateTime = (await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2010),
-                            lastDate: DateTime(2025)))!;
-                        setState(() {
-                          print(_myDateTime);
-                          //final now = DateTime.now();
-                          // print(_myDateTime);
-                          date = DateFormat('dd-MM-yyyy').format(_myDateTime);
-                          print('format to $date');
-                          //time = _myDateTime.toString();
-                        });
-                      },
-                      child: Container(
-                          // width: 100,
-                          decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20)),
-                              color: Colors.grey.withOpacity(0.3)),
-                          padding: const EdgeInsets.only(
-                              top: 20, left: 15, right: 15, bottom: 20),
-                          margin:
-                              const EdgeInsets.only(top: 7, left: 0, right: 0),
-                          child: date == ''
-                              ? const Text('Select date')
-                              : Text('Date : $date')),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        final newTime = await showTimePicker(
-                            context: context, initialTime: initialTime);
-
-                        setState(() {
-                          time = newTime!;
-                          hour = time.hour.toString();
-                          min = time.minute.toString();
-                          if (hour.length == 1 && min.length == 1) {
-                            timetext = ' 0${time.hour}:0${time.minute}';
-                          } else if (hour.length == 2 && min.length == 1) {
-                            timetext = ' ${time.hour}:0${time.minute}';
-                          } else if (hour.length == 1 && min.length == 2) {
-                            timetext = ' 0${time.hour}:${time.minute}';
-                          } else if (hour.length == 2 && min.length == 2) {
-                            timetext = ' ${time.hour}:${time.minute}';
-                          }
-                          // print(time.hour.bitLength);
-                        });
-                      },
-                      child: Container(
-                          // width: 100,
-                          decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20)),
-                              color: Colors.grey.withOpacity(0.3)),
-                          padding: const EdgeInsets.only(
-                              top: 20, left: 15, right: 15, bottom: 20),
-                          margin:
-                              const EdgeInsets.only(top: 7, left: 0, right: 0),
-                          child: time == const TimeOfDay(hour: -10, minute: 0)
-                              ? const Text('Choose time')
-                              : Text(
-                                  'Time : ${time.hour.toString()} : ${time.minute.toString()} ')),
-                    ),
-                  ],
-                )
-              ],
-            )),
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Add'),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // late String todo = '';
+  // late String description = '';
+  // late DateTime _myDateTime;
+  // late String date = '';
+  // final initialTime = const TimeOfDay(hour: 0, minute: 0);
+  // late TimeOfDay time = const TimeOfDay(hour: -10, minute: 0);
+  // final formKey = GlobalKey<FormState>();
+  // late String timetext = '?';
+  // late String hour = '?';
+  // late String min = '?';
+  // Future<void> _showMyDialog() async {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false, // user must tap button!
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Add new?'),
+  //         content: SizedBox(
+  //           height: 220,
+  //           child: SingleChildScrollView(
+  //               child: Column(
+  //             children: [
+  //               Container(
+  //                 margin: const EdgeInsets.only(top: 0, left: 20, right: 20),
+  //                 child: TextFormField(
+  //                   validator: (value) {
+  //                     if (value == null ||
+  //                         value.isEmpty ||
+  //                         value.length >= 100) {
+  //                       return 'Please enter To do.';
+  //                     }
+  //                     return null;
+  //                   },
+  //                   decoration: InputDecoration(
+  //                       prefixIcon: const Icon(Icons.sports_soccer),
+  //                       labelText: 'To do',
+  //                       border: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(15.0),
+  //                       )),
+  //                   onChanged: (String value) {
+  //                     todo = value;
+  //                   },
+  //                 ),
+  //               ),
+  //               Container(
+  //                 margin: const EdgeInsets.only(top: 7, left: 20, right: 20),
+  //                 child: TextFormField(
+  //                   decoration: InputDecoration(
+  //                       prefixIcon: const Icon(Icons.description),
+  //                       labelText: 'Description',
+  //                       border: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(15.0),
+  //                       )),
+  //                   onChanged: (String value) {
+  //                     description = value;
+  //                   },
+  //                 ),
+  //               ),
+  //               Text(date),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   InkWell(
+  //                     onTap: () async {
+  //                       _myDateTime = (await showDatePicker(
+  //                           context: context,
+  //                           initialDate: DateTime.now(),
+  //                           firstDate: DateTime(2010),
+  //                           lastDate: DateTime(2025)))!;
+  //                       setState(() {
+  //                         print(_myDateTime);
+  //                         //final now = DateTime.now();
+  //                         // print(_myDateTime);
+  //                         date = DateFormat('dd-MM-yyyy').format(_myDateTime);
+  //                         print('format to $date');
+  //                         //time = _myDateTime.toString();
+  //                       });
+  //                     },
+  //                     child: Container(
+  //                         // width: 100,
+  //                         decoration: BoxDecoration(
+  //                             borderRadius: const BorderRadius.only(
+  //                                 topLeft: Radius.circular(20),
+  //                                 bottomLeft: Radius.circular(20),
+  //                                 topRight: Radius.circular(20),
+  //                                 bottomRight: Radius.circular(20)),
+  //                             color: Colors.grey.withOpacity(0.3)),
+  //                         padding: const EdgeInsets.only(
+  //                             top: 20, left: 15, right: 15, bottom: 20),
+  //                         margin:
+  //                             const EdgeInsets.only(top: 7, left: 0, right: 0),
+  //                         child: date == ''
+  //                             ? const Text('Select date')
+  //                             : Text('Date : $date')),
+  //                   ),
+  //                   InkWell(
+  //                     onTap: () async {
+  //                       final newTime = await showTimePicker(
+  //                           context: context, initialTime: initialTime);
+  //
+  //                       setState(() {
+  //                         time = newTime!;
+  //                         hour = time.hour.toString();
+  //                         min = time.minute.toString();
+  //                         if (hour.length == 1 && min.length == 1) {
+  //                           timetext = ' 0${time.hour}:0${time.minute}';
+  //                         } else if (hour.length == 2 && min.length == 1) {
+  //                           timetext = ' ${time.hour}:0${time.minute}';
+  //                         } else if (hour.length == 1 && min.length == 2) {
+  //                           timetext = ' 0${time.hour}:${time.minute}';
+  //                         } else if (hour.length == 2 && min.length == 2) {
+  //                           timetext = ' ${time.hour}:${time.minute}';
+  //                         }
+  //                         // print(time.hour.bitLength);
+  //                       });
+  //                     },
+  //                     child: Container(
+  //                         // width: 100,
+  //                         decoration: BoxDecoration(
+  //                             borderRadius: const BorderRadius.only(
+  //                                 topLeft: Radius.circular(20),
+  //                                 bottomLeft: Radius.circular(20),
+  //                                 topRight: Radius.circular(20),
+  //                                 bottomRight: Radius.circular(20)),
+  //                             color: Colors.grey.withOpacity(0.3)),
+  //                         padding: const EdgeInsets.only(
+  //                             top: 20, left: 15, right: 15, bottom: 20),
+  //                         margin:
+  //                             const EdgeInsets.only(top: 7, left: 0, right: 0),
+  //                         child: time == const TimeOfDay(hour: -10, minute: 0)
+  //                             ? const Text('Choose time')
+  //                             : Text(
+  //                                 'Time : ${time.hour.toString()} : ${time.minute.toString()} ')),
+  //                   ),
+  //                 ],
+  //               )
+  //             ],
+  //           )),
+  //         ),
+  //         actions: <Widget>[
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               TextButton(
+  //                 child: const Text('Cancel'),
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //               ),
+  //               TextButton(
+  //                 child: const Text('Add'),
+  //                 onPressed: () {},
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<AwesomeDialog> DeleteAwesome(String title, String id) async =>
       AwesomeDialog(
@@ -838,4 +849,335 @@ class _TodolistScreenState extends State<TodolistScreen> {
                 ..show());
         },
       )..show();
+}
+
+class MySearchDelegate extends SearchDelegate {
+  @override
+  Widget? buildLeading(BuildContext context) => IconButton(
+      onPressed: () => close(context, null), icon: Icon(Icons.arrow_back));
+
+  @override
+  List<Widget>? buildActions(BuildContext context) => [
+        IconButton(
+            onPressed: () {
+              if (query.isEmpty) {
+                close(context, null);
+              } else {
+                query = '';
+              }
+            },
+            icon: Icon(Icons.clear))
+      ];
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // final prov = Provider.of<TodolistProvider>(context);
+    // DateTime dateTimeNow = DateTime.now(); //DateTime
+    // Timestamp myTimeStamp = Timestamp.fromDate(dateTimeNow);
+    // prov.createSearch(search: query, createDate: myTimeStamp);
+    final prov = Provider.of<TodolistProvider>(context);
+    final provHistory = Provider.of<TodolistHistoryProvider>(context);
+
+    return Background(
+        child: Container(
+      child: StreamBuilder<List<Todolist>>(
+        stream: prov.getTodosFromSearch(query),
+        builder: (
+          context,
+          snapshot,
+        ) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong.');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+                margin: const EdgeInsets.only(top: 200),
+                child: const CircularProgressIndicator());
+          }
+          final data = snapshot.requireData;
+
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          index != 0
+                              ? data[index].date.substring(0, 10) ==
+                                      data[index - 1].date.substring(0, 10)
+                                  ? ""
+                                  : "${data[index].date.substring(0, 10)}"
+                              : "${data[index].date.substring(0, 10)}",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      )
+                    ],
+                  ),
+                  Slidable(
+                      endActionPane: ActionPane(
+                        motion: StretchMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: ((context) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditTodoScreen(
+                                        data: snapshot.data![index])),
+                              );
+                            }),
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.orange.shade200,
+                            icon: Icons.edit,
+                          ),
+                          SlidableAction(
+                            onPressed: ((context) {
+                              // DeleteAwesome(
+                              //   snapshot.data![index].todo,
+                              //   snapshot.data![index].id,
+                              // );
+                            }),
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red.shade400,
+                            icon: Icons.delete,
+                          )
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20),
+                                            bottomRight: Radius.circular(20)),
+                                        color: Colors.white),
+                                    child: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 10,
+                                          bottom: 10),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '${data[index].status}',
+                                                  style: TextStyle(
+                                                      color: Colors.red[300],
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    // Note: Styles for TextSpans must be explicitly defined.
+                                                    // Child text spans will inherit styles from parent
+                                                    style: const TextStyle(
+                                                      // fontSize: 14.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                    children: <TextSpan>[
+                                                      const TextSpan(
+                                                          text: 'Todo :',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(
+                                                        text:
+                                                            '${data[index].todo}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                data[index].description == ''
+                                                    ? Row()
+                                                    : RichText(
+                                                        text: TextSpan(
+                                                          // Note: Styles for TextSpans must be explicitly defined.
+                                                          // Child text spans will inherit styles from parent
+                                                          style:
+                                                              const TextStyle(
+                                                            // fontSize:
+                                                            //     17.0,
+                                                            color: Colors.black,
+                                                          ),
+                                                          children: <TextSpan>[
+                                                            const TextSpan(
+                                                                text:
+                                                                    'Description :',
+                                                                style: const TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold)),
+                                                            TextSpan(
+                                                              text:
+                                                                  '${data[index].description}',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    style: const TextStyle(
+                                                      // fontSize: 14.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                    children: <TextSpan>[
+                                                      const TextSpan(
+                                                          text: 'Time :',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(
+                                                        text:
+                                                            ' ${data[index].date.substring(11, 16)}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          snapshot.data?[index].img != ''
+                                              ? Container(
+                                                  width: 80,
+                                                  height: 80,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          const BorderRadius.only(
+                                                              topLeft: Radius
+                                                                  .circular(20),
+                                                              bottomLeft: Radius
+                                                                  .circular(20),
+                                                              topRight: Radius
+                                                                  .circular(20),
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          20)),
+                                                      color: Colors.white38,
+                                                      image: DecorationImage(
+                                                          fit: BoxFit.cover,
+                                                          image: NetworkImage(
+                                                              '${snapshot.data?[index].img}'))),
+                                                )
+                                              : Container(),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        leading: IconButton(
+                          onPressed: () {
+                            AwesomeDialog(
+                              btnOkOnPress: () async {
+                                await provHistory
+                                    .createTodoHistory(
+                                        img: data[index].img,
+                                        createAt: data[index].createAt,
+                                        todo: data[index].todo,
+                                        date: data[index].date,
+                                        description: data[index].description,
+                                        createDate: data[index].createDate)
+                                    .then((value) =>
+                                        prov.deleteTodos(id: data[index].id))
+                                    .then((value) => AwesomeDialog(
+                                          btnOkOnPress: () {},
+                                          context: context,
+                                          dialogType: DialogType.success,
+                                          animType: AnimType.rightSlide,
+                                          title:
+                                              'You success the ${data[index].todo}!',
+                                          autoHide: const Duration(seconds: 2),
+                                        ).show());
+                              },
+                              btnCancelOnPress: () {},
+                              context: context,
+                              dialogType: DialogType.question,
+                              animType: AnimType.rightSlide,
+                              title:
+                                  'You success the ${data[index].todo}, right?',
+                              autoHide: const Duration(seconds: 2),
+                            ).show();
+                          },
+                          icon: AppIcon(
+                            icon: Icons.check,
+                            backgroundColor: Colors.grey.withOpacity(0.5),
+                            iconColor: Colors.grey,
+                            iconSize: 20,
+                          ),
+                        ),
+                      ))
+                ],
+              );
+            },
+          );
+        },
+      ),
+    ));
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final prov = Provider.of<TodolistProvider>(context);
+    // var getLists = prov.getTodos('date');
+
+    var getLists = FirebaseFirestore.instance
+        .collection('todolist')
+        .orderBy('date', descending: false)
+        .snapshots()
+        .map((snapshots) =>
+            snapshots.docs.map((doc) => Todo.fromJson(doc.data())).toList());
+    return StreamBuilder<List<Todo>>(
+      stream: getLists,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data?.length,
+              itemBuilder: (context, index) {
+                final suggestion = snapshot.data![index].todo;
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.search),
+                      title: Text(suggestion),
+                      onTap: () {
+                        query = suggestion;
+                        showResults(context);
+                      },
+                    ),
+                    Divider(
+                      color: Colors.black.withOpacity(0.5),
+                      thickness: 1,
+                    )
+                  ],
+                );
+              });
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
 }

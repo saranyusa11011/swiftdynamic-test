@@ -43,3 +43,43 @@ class Todolist {
         img: json['img'],
       );
 }
+
+class Todo {
+  String todo;
+
+  Todo({
+    required this.todo,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'todo': todo,
+      };
+
+  static Todo fromJson(Map<String, dynamic> json) => Todo(
+        todo: json['todo'],
+      );
+}
+
+// class Search {
+//   String search;
+//   String id;
+//   Timestamp createDate;
+//
+//   Search({
+//     required this.search,
+//     required this.id,
+//     required this.createDate,
+//   });
+//
+//   Map<String, dynamic> toJson() => {
+//         'search': search,
+//         'id': id,
+//         'createDate': createDate,
+//       };
+//
+//   static Search fromJson(Map<String, dynamic> json) => Search(
+//         search: json['search'],
+//         id: json['id'],
+//         createDate: json['createDate'],
+//       );
+// }

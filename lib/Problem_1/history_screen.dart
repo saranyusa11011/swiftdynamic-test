@@ -99,13 +99,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   margin: EdgeInsets.only(left: 20),
                                   child: Text(
                                     index != 0
-                                        ? data[index].date.substring(0, 8) ==
+                                        ? data[index].date.substring(0, 10) ==
                                                 data[index - 1]
                                                     .date
-                                                    .substring(0, 8)
+                                                    .substring(0, 10)
                                             ? ""
-                                            : "${data[index].date.substring(0, 8)}"
-                                        : "${data[index].date.substring(0, 8)}",
+                                            : "${data[index].date.substring(0, 10)}"
+                                        : "${data[index].date.substring(0, 10)}",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15),
